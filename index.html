@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Greetings Widget</title>
+
+  <style>
+    :root {
+      --text-colour: #000000;
+      --border-colour: #000000;
+      --shadow-colour: #000000;
+      --background-colour: transparent;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text-colour: #ffffff;
+        --border-colour: #ffffff;
+        --shadow-colour: #ffffff;
+        --background-colour: transparent;
+      }
+    }
+
+    body {
+      font-variant-caps: all-petite-caps;
+      color: var(--text-colour);
+      background: var(--background-colour);
+      margin: 0;
+      padding: 0;
+    }
+
+    .widget {
+      padding: 5px;
+      color: var(--text-colour);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      max-width: 95%;
+      margin: auto;
+      border: 3px solid var(--border-colour);
+      border-radius: 5px;
+      box-shadow: 2px 2px 1px 0px var(--shadow-colour);
+      background: transparent;
+    }
+
+    .greet {
+      font-size: 3em;
+    }
+
+    .date, .clock {
+      font-family: monospace;
+      font-size: 2em;
+    }
+
+    .time {
+      display: inline-block;
+      min-width: 20px;
+    }
+
+    .colon {
+      font-size: 1em;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="widget">
+      <div class="greet" id="greet"></div>
+      <div class="date" id="date"></div>
+      <div class="clock">
+        <div class="time" id="hour"></div>
+        <div class="colon">:</div>
+        <div class="time" id="min"></div>
+        <div class="colon">:</div>
+        <div class="time" id="sec"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function displayGreetings(today) {
+      let hrs = today.getHours();
+      let greet = '';
+      if (hrs < 12)
+        greet = 'Good Morning';
+      else if (hrs >= 12 && hrs <= 17)
+        greet = 'Good Afternoon';
+      else if (hrs >= 17 && hrs <= 24)
+        greet = 'Good Evening';
+      document.getElementById('greet').innerText = greet;
+    }
+
+    function displayDate(today) {
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+
+      const dayName = days[today.getDay()];
+      const monthName = months[today.getMonth()];
+      const date = today.getDate();
+      const year = today.getFullYear();
+      document.getElementById('date').innerText = `${dayName}, ${monthName} ${date} ${year}`;
+    }
+
+    function displayClock(today) {
+      let hour = padZeros(twelveHour(today.getHours()));
+      let minutes = padZeros(today.getMinutes());
+      let seconds = padZeros(today.getSeconds());
+      const ampm = today.getHours() >= 12 ? 'PM' : 'AM';
+      document.getElementById('hour').innerText = hour;
+      document.getElementById('min').innerText = minutes;
+      document.getElementById('sec').innerText = `${seconds} ${ampm}`;
+    }
+
+    function twelveHour(hour) {
+      if (hour > 12) return hour - 12;
+      if (hour === 0) return 12;
+      return hour;
+    }
+
+    function padZeros(num) {
+      return num < 10 ? '0' + num : num;
+    }
+
+    function displayWidget() {
+      const today = new Date();
+      displayGreetings(today);
+      display
