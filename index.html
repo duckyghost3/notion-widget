@@ -6,62 +6,68 @@
   <title>Greetings</title>
 
   <style>
-    /* Default (Light Mode) */
+    /* --- Light Mode (default) --- */
     :root {
       --text-colour: #000000;
       --border-colour: #000000;
-      --shadow-colour: #000000;
-      --background-colour: transparent;
+      --shadow-colour: rgba(0, 0, 0, 0.3);
+      --background-colour: #ffffff;
     }
 
-    /* Dark Mode */
+    /* --- Dark Mode --- */
     @media (prefers-color-scheme: dark) {
       :root {
         --text-colour: #ffffff;
         --border-colour: #ffffff;
-        --shadow-colour: #ffffff;
-        --background-colour: transparent;
+        --shadow-colour: rgba(255, 255, 255, 0.3);
+        --background-colour: #181818;
       }
     }
 
- body {
-  font-variant-caps: all-petite-caps;
-  background: #11111110; /* faint gray for testing */
-  margin: 0;
-  padding: 0;
-}
+    /* --- Page --- */
+    body {
+      font-variant-caps: all-petite-caps;
+      background: var(--background-colour);
+      color: var(--text-colour);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: system-ui, sans-serif;
+    }
 
-
+    /* --- Widget Box --- */
     .widget {
-      padding: 5px 5px;
+      padding: 16px 24px;
       color: var(--text-colour);
       display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: column;
-      max-width: 95%;
-      margin: auto;
-      border: 3px solid var(--border-colour);
-      border-radius: 5px;
-      box-shadow: 2px 2px 1px 0px var(--shadow-colour);
-      background: transparent;
+      border: 2px solid var(--border-colour);
+      border-radius: 10px;
+      box-shadow: 2px 2px 6px var(--shadow-colour);
+      background: var(--background-colour);
+      text-align: center;
+      width: fit-content;
+      min-width: 260px;
     }
 
     .greet {
-      font-size: 3em;
-      color: var(--text-colour);
+      font-size: 2.2em;
+      margin-bottom: 0.2em;
     }
 
     .date {
       font-family: monospace;
-      font-size: 2em;
-      color: var(--text-colour);
+      font-size: 1.3em;
+      margin-bottom: 0.3em;
     }
 
     .clock {
       font-family: monospace;
-      font-size: 2em;
-      color: var(--text-colour);
+      font-size: 1.3em;
     }
 
     .time {
@@ -76,54 +82,49 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="widget">
-      <div class="greet" id="greet"></div>
-      <div class="date" id="date"></div>
-      <div class="clock">
-        <div class="time" id="hour"></div>
-        <div class="colon">:</div>
-        <div class="time" id="min"></div>
-        <div class="colon">:</div>
-        <div class="time" id="sec"></div>
-      </div>
+  <div class="widget">
+    <div class="greet" id="greet"></div>
+    <div class="date" id="date"></div>
+    <div class="clock">
+      <span class="time" id="hour"></span>
+      <span class="colon">:</span>
+      <span class="time" id="min"></span>
+      <span class="colon">:</span>
+      <span class="time" id="sec"></span>
     </div>
   </div>
 
   <script>
-    function dispalyGreetings(today) {
+    function displayGreetings(today) {
       const hrs = today.getHours();
       let greet = "";
       if (hrs < 12) greet = "Good Morning";
-      else if (hrs >= 12 && hrs <= 17) greet = "Good Afternoon";
-      else if (hrs >= 17 && hrs <= 24) greet = "Good Evening";
-      document.getElementById("greet").innerHTML = greet;
+      else if (hrs < 18) greet = "Good Afternoon";
+      else greet = "Good Evening";
+      document.getElementById("greet").innerText = greet;
     }
 
-    function dispalyDate(today) {
+    function displayDate(today) {
       const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-      const monthNames = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-      ];
+      const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
       const dayName = days[today.getDay()];
-      const monthName = monthNames[today.getMonth()];
+      const monthName = months[today.getMonth()];
       const date = today.getDate();
       const year = today.getFullYear();
-      document.getElementById("date").innerHTML = `${dayName}, ${monthName} ${date} ${year}`;
+      document.getElementById("date").innerText = `${dayName}, ${monthName} ${date}, ${year}`;
     }
 
-    function dispalyClock(today) {
-      let hour = padZeros(twelveHour(today.getHours()));
-      let minutes = padZeros(today.getMinutes());
-      let seconds = padZeros(today.getSeconds());
-      seconds += today.getHours() >= 12 ? " pm" : " am";
-      document.getElementById("hour").innerHTML = hour;
-      document.getElementById("min").innerHTML = minutes;
-      document.getElementById("sec").innerHTML = seconds;
+    function displayClock(today) {
+      const hour = padZeros(toTwelveHour(today.getHours()));
+      const minutes = padZeros(today.getMinutes());
+      const seconds = padZeros(today.getSeconds());
+      const ampm = today.getHours() >= 12 ? " pm" : " am";
+      document.getElementById("hour").innerText = hour;
+      document.getElementById("min").innerText = minutes;
+      document.getElementById("sec").innerText = seconds + ampm;
     }
 
-    function twelveHour(hour) {
+    function toTwelveHour(hour) {
       if (hour > 12) return hour - 12;
       if (hour === 0) return 12;
       return hour;
@@ -133,15 +134,15 @@
       return num < 10 ? "0" + num : num;
     }
 
-    function dispalyWidget() {
+    function updateWidget() {
       const today = new Date();
-      dispalyGreetings(today);
-      dispalyDate(today);
-      dispalyClock(today);
-      setTimeout(dispalyWidget, 500);
+      displayGreetings(today);
+      displayDate(today);
+      displayClock(today);
+      setTimeout(updateWidget, 500);
     }
 
-    dispalyWidget();
+    updateWidget();
   </script>
 </body>
 </html>
